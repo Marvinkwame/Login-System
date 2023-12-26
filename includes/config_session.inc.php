@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 //making sessions make secure
@@ -16,22 +16,45 @@ session_set_cookie_params([
 
 session_start();
 
-//checks whether there is a cookie and updates it
-if(!isset( $_SESSION["last_regeneration"])) {
+if (isset($_SESSION['user_id'])) {
+    //checks whether there is a cookie and updates it
+    if (!isset($_SESSION["last_regeneration"])) {
 
-    regenerate_session_id();
+        regenerate_session_id_loggedIn();
+    } else {
+        $interval = 60 * 30; //30 minutes
+        if ((time() - $_SESSION['last_regeneration']) > $interval) {
+            regenerate_session_id_loggedIn();
+        }
+    }
 } else {
-    $interval = 60*30; //30 minutes
-    if((time() - $_SESSION['last_regeneration']) > $interval) { 
+    //checks whether there is a cookie and updates it
+    if (!isset($_SESSION["last_regeneration"])) {
+
         regenerate_session_id();
-     }
+    } else {
+        $interval = 60 * 30; //30 minutes
+        if ((time() - $_SESSION['last_regeneration']) > $interval) {
+            regenerate_session_id();
+        }
+    }
 }
 
 
-function regenerate_session_id() {
-    session_regenerate_id(); //regenerates the seesion id to make it better and more secure
+
+
+function regenerate_session_id()
+{
+    session_regenerate_id(true); //regenerates the seesion id to make it better and more secure
+    $userId = $_SESSION["user_id"];
+    $newSessionId = session_create_id();
+        $sessionId = $newSessionId . "_" . $userId;
+        session_id($sessionId);
     $_SESSION["last_regeneration"] = time(); //checks the last time we updated our session id
 }
 
-
-?>
+function regenerate_session_id_loggedIn()
+{
+    session_regenerate_id(true); //regenerates the seesion id to make it better and more secure
+    $_SESSION["last_regeneration"] = time(); //checks the last time we updated our session id
+}
