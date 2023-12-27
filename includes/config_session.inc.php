@@ -40,9 +40,6 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-
-
-
 function regenerate_session_id()
 {
     session_regenerate_id(true); //regenerates the seesion id to make it better and more secure
